@@ -1,4 +1,4 @@
-# sample_app
+# flutter_gcs
 
 A new Flutter project.
 
