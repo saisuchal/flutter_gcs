@@ -502,14 +502,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
-  usb_serial:
-    dependency: "direct main"
-    description:
-      name: usb_serial
-      sha256: f9f836b505517a162f217b51135cf496eccc96f592852c286dbb98a4b27470c6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.0"
   vector_math:
     dependency: transitive
     description:
