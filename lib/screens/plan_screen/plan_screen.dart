@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:latlong2/latlong.dart' as latlng;
 import 'package:path_provider/path_provider.dart';
-
 import '../../widgets/floating_nav_menu.dart';
 import '../../src/provider/mavlink_provider.dart';
 import '../../src/provider/provider.dart';
@@ -64,18 +63,22 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
 
   Future<void> _saveWaypointsToFile(List<Waypoint> wps) async {
     final path = await _getLocalFilePath('waypoints.json');
-    final data = wps.map((wp) => {
-      'sequence': wp.sequence,
-      'lat': wp.position.latitude,
-      'lon': wp.position.longitude,
-      'alt': wp.altitude,
-      'command': wp.command,
-      'param1': wp.param1,
-      'param2': wp.param2,
-      'param3': wp.param3,
-      'param4': wp.param4,
-      'current': wp.current,
-    }).toList();
+    final data = wps
+        .map(
+          (wp) => {
+            'sequence': wp.sequence,
+            'lat': wp.position.latitude,
+            'lon': wp.position.longitude,
+            'alt': wp.altitude,
+            'command': wp.command,
+            'param1': wp.param1,
+            'param2': wp.param2,
+            'param3': wp.param3,
+            'param4': wp.param4,
+            'current': wp.current,
+          },
+        )
+        .toList();
     await File(path).writeAsString(jsonEncode(data));
     _showFlushbar("🔖 Waypoints saved to file", color: Colors.green);
   }
@@ -86,17 +89,21 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       final raw = await File(path).readAsString();
       final List decoded = jsonDecode(raw);
 
-      final waypoints = decoded.map((wp) => Waypoint(
-        sequence: wp['sequence'] ?? 0,
-        position: gmaps.LatLng(wp['lat'], wp['lon']),
-        altitude: wp['alt'] ?? 10.0,
-        command: wp['command'] ?? 16,
-        param1: wp['param1'] ?? 0.0,
-        param2: wp['param2'] ?? 0.0,
-        param3: wp['param3'] ?? 0.0,
-        param4: wp['param4'] ?? 0.0,
-        current: wp['current'] ?? false,
-      )).toList();
+      final waypoints = decoded
+          .map(
+            (wp) => Waypoint(
+              sequence: wp['sequence'] ?? 0,
+              position: gmaps.LatLng(wp['lat'], wp['lon']),
+              altitude: wp['alt'] ?? 10.0,
+              command: wp['command'] ?? 16,
+              param1: wp['param1'] ?? 0.0,
+              param2: wp['param2'] ?? 0.0,
+              param3: wp['param3'] ?? 0.0,
+              param4: wp['param4'] ?? 0.0,
+              current: wp['current'] ?? false,
+            ),
+          )
+          .toList();
 
       ref.read(waypointProvider.notifier).set(waypoints);
       _showFlushbar("📂 Waypoints loaded", color: Colors.teal);
@@ -104,41 +111,6 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       _showFlushbar("❌ Failed to load waypoints", color: Colors.red);
     }
   }
-
-//   Future<void> _sendWaypointsToDrone() async {
-  
-//   final telemetry = ref.read(mavlinkProvider);
-//   final waypoints = ref.read(waypointProvider);
-//   final commandService = ref.read(mavlinkCommandServiceProvider);
-//   final currentLat = telemetry.latitude ?? 0.0;
-//   final currentLon = telemetry.longitude ?? 0.0;
-
-//   final missionItems = [
-//     Waypoint(
-//       sequence: 0,
-//       position: gmaps.LatLng(currentLat, currentLon),
-//       altitude: 10.0,
-//       command: 22, // MAV_CMD_NAV_TAKEOFF
-//       param1: 0,
-//       param2: 0,
-//       param3: 0,
-//       param4: 0,
-//       current: true,
-//     ),
-//     ...waypoints.asMap().entries.map((entry) {
-//       return entry.value.copyWith(
-//         sequence: entry.key + 1,
-//         current: false,
-//       );
-//     })
-//   ];
-
-
-//   await commandService.uploadMission(ref.read(waypointProvider));
-
-//    // ✅ FIXED
-//   _showFlushbar("✅ Waypoints sent to drone", color: Colors.green);
-// }
 
   void _showFlushbar(
     String message, {
@@ -157,7 +129,6 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       maxWidth: 500,
     ).show(context);
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +220,6 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       ),
     );
   }
-
 
   Widget _buildGoogleMap(
     gmaps.LatLng? dronePos,
@@ -380,7 +350,10 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                   leading: SizedBox(
                     width: 40,
                     height: 40,
-                    child: CircleAvatar(child: Text('${index + 1}')),
+                    child: CircleAvatar(
+                      radius: 18, // Explicitly set radius smaller than SizedBox
+                      child: Text('${index + 1}'),
+                    ),
                   ),
                   title: Text(
                     'Lat: ${wp.position.latitude.toStringAsFixed(6)}\n'
